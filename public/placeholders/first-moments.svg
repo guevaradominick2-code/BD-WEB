@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3dce2"/><stop offset="1" stop-color="#b7778a"/></linearGradient><filter id="grain"><feTurbulence baseFrequency=".7" numOctaves="2"/><feColorMatrix values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 .08 0"/></filter></defs>
+  <rect width="800" height="1000" fill="url(#g)"/><circle cx="620" cy="210" r="180" fill="#fff9f5" opacity=".38"/><path d="M80 730C220 570 380 630 510 500c70-70 140-90 230-70v570H80Z" fill="#5a2636" opacity=".22"/><rect width="800" height="1000" filter="url(#grain)" opacity=".3"/>
+  <text x="400" y="845" fill="#fff9f5" font-family="Georgia,serif" font-size="34" text-anchor="middle">YOUR PHOTO HERE</text><text x="400" y="890" fill="#fff9f5" opacity=".7" font-family="Arial,sans-serif" font-size="17" letter-spacing="4" text-anchor="middle">OUR FIRST MOMENTS</text>
+</svg>

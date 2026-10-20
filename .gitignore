@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# next
+.next/
+out/
+
+# testing
+coverage/
+
+# local environment
+.env
+.env.local
+.env.*.local
+
+# deployment
+.vercel/
+
+# system
+.DS_Store
+Thumbs.db
+*.log
+
+# typescript
+*.tsbuildinfo

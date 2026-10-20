@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="#3e2630"/><stop offset="1" stop-color="#150e12"/></linearGradient></defs><rect width="1200" height="675" fill="url(#g)"/><circle cx="260" cy="120" r="105" fill="#d9b98f" opacity=".18"/><circle cx="950" cy="180" r="170" fill="#f5dde3" opacity=".08"/><path d="M280 530h640" stroke="#d9b98f" stroke-width="4" opacity=".5"/><path d="M460 530c0-120 280-120 280 0" fill="#f5dde3" opacity=".2"/><g fill="#d9b98f"><circle cx="520" cy="400" r="8"/><circle cx="600" cy="360" r="10"/><circle cx="680" cy="400" r="8"/></g><text x="600" y="610" fill="#f5dde3" font-family="Georgia,serif" font-size="31" text-anchor="middle">A TABLE FOR TWO</text>
+</svg>
