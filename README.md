@@ -67,7 +67,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_DEFAULT_TIMEZONE=America/Costa_Rica
 NEXT_PUBLIC_DEMO_MODE=false
+ACCESS_WORD=una-palabra-privada
+ACCESS_SESSION_SECRET=un-secreto-aleatorio-largo
 ```
+
+`ACCESS_WORD` habilita la entrada romántica de María sin exponer la palabra en el bundle. `ACCESS_SESSION_SECRET` firma una cookie `HttpOnly`; genera un valor aleatorio distinto para producción. El administrador entra desde el enlace discreto de la portada y mantiene la autenticación de Supabase.
 
 El bucket `memories` se crea como privado. Las imágenes se entregan mediante URLs firmadas por una hora y las políticas de Storage verifican que el usuario pertenezca a la celebración.
 

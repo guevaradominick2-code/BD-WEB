@@ -6,6 +6,7 @@ export interface Viewer {
   role: Role;
   displayName: string;
   demo: boolean;
+  accessWord?: boolean;
 }
 
 export interface AppSettings {

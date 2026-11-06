@@ -117,7 +117,7 @@ async function signMemoryUrls(rows: Row[]): Promise<Memory[]> {
 }
 
 export async function getExperienceData(viewer: Viewer): Promise<ExperienceData> {
-  if (viewer.demo) {
+  if (viewer.demo || viewer.accessWord) {
     return {
       ...demoData,
       events: demoData.events.map((event) =>

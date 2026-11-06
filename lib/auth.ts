@@ -3,6 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { ACCESS_COOKIE, verifyAccessSession } from "@/lib/access";
 import type { Role, Viewer } from "@/lib/types";
 
 export function isDemoEnabled() {
@@ -14,8 +15,8 @@ export function isDemoEnabled() {
 }
 
 export async function resolveViewer(): Promise<Viewer | null> {
+  const cookieStore = await cookies();
   if (isDemoEnabled()) {
-    const cookieStore = await cookies();
     const roleValue = cookieStore.get("olu_demo_role")?.value;
     if (roleValue !== "admin" && roleValue !== "girlfriend") return null;
     return {
@@ -26,12 +27,16 @@ export async function resolveViewer(): Promise<Viewer | null> {
     };
   }
 
-  if (!isSupabaseConfigured()) return null;
+  const privateGuest = verifyAccessSession(cookieStore.get(ACCESS_COOKIE)?.value)
+    ? ({ id: "private-guest", role: "girlfriend", displayName: "María", demo: false, accessWord: true } satisfies Viewer)
+    : null;
+
+  if (!isSupabaseConfigured()) return privateGuest;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return privateGuest;
 
   const { data: profile } = await supabase
     .from("profiles")

@@ -1,4 +1,4 @@
-import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, KeyRound, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
 import { StarField } from "@/components/star-field";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,14 @@ export const dynamic = "force-dynamic";
 export default async function WelcomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; admin?: string }>;
 }) {
+  const { error, admin } = await searchParams;
+  const adminMode = admin === "1";
   const viewer = await resolveViewer();
-  if (viewer) redirect(viewer.role === "admin" ? "/admin" : "/universe");
+  if (viewer?.role === "admin") redirect("/admin");
+  if (viewer && !adminMode) redirect("/universe");
   const demo = isDemoEnabled();
-  const { error } = await searchParams;
 
   return (
     <main className="login-shell min-h-dvh overflow-hidden">
@@ -51,15 +53,15 @@ export default async function WelcomePage({
           <div className="relative">
             <div className="mb-8 flex items-start justify-between">
               <div className="grid size-12 place-items-center rounded-2xl bg-[#5a2636] text-white shadow-lg">
-                <LockKeyhole className="size-5" />
+                {adminMode ? <LockKeyhole className="size-5" /> : <KeyRound className="size-5" />}
               </div>
               <span className="rounded-full border border-[#5a2636]/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.18em] text-[#5a2636]/60">
-                Private access
+                {adminMode ? "Administración" : "Sólo nosotros"}
               </span>
             </div>
-            <p className="text-xs font-semibold uppercase tracking-[.22em] text-[#9b7957]">Bienvenida, María</p>
-            <h2 className="mt-3 font-serif text-4xl leading-tight text-[#282126]">Este lugar fue creado para una sola persona. Tú.</h2>
-            <p className="mt-4 text-sm leading-6 text-[#6f6268]">Ingresa con la invitación privada que recibiste.</p>
+            <p className="text-xs font-semibold uppercase tracking-[.22em] text-[#9b7957]">{adminMode ? "Panel privado" : "Bienvenida, María"}</p>
+            <h2 className="mt-3 font-serif text-4xl leading-tight text-[#282126]">{adminMode ? "Administra cada detalle de la experiencia." : "Hay una palabra que sólo nosotros conocemos."}</h2>
+            <p className="mt-4 text-sm leading-6 text-[#6f6268]">{adminMode ? "Accede con tu cuenta administrativa." : "Escríbela exactamente como la recuerdas para comenzar nuestra historia."}</p>
 
             {error ? (
               <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
@@ -67,19 +69,20 @@ export default async function WelcomePage({
               </div>
             ) : null}
 
-            <form action="/auth/sign-in" method="post" className="mt-7 space-y-4">
-              <label className="block">
-                <span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Email</span>
-                <Input name="email" type="email" autoComplete="email" placeholder="tu@email.com" required className="bg-white" />
-              </label>
-              <label className="block">
-                <span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Contraseña</span>
-                <Input name="password" type="password" autoComplete="current-password" placeholder="••••••••••" required className="bg-white" />
-              </label>
-              <Button type="submit" size="lg" className="w-full">
-                Comenzar nuestra historia <ArrowRight className="size-4" />
-              </Button>
-            </form>
+            {adminMode ? (
+              <form action="/auth/sign-in" method="post" className="mt-7 space-y-4">
+                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Email</span><Input name="email" type="email" autoComplete="email" placeholder="tu@email.com" required className="bg-white" /></label>
+                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Contraseña</span><Input name="password" type="password" autoComplete="current-password" placeholder="••••••••••" required className="bg-white" /></label>
+                <Button type="submit" size="lg" className="w-full">Entrar al panel <ArrowRight className="size-4" /></Button>
+              </form>
+            ) : (
+              <form action="/auth/access" method="post" className="mt-7 space-y-4">
+                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Nuestra palabra</span><Input name="word" type="password" autoComplete="off" placeholder="Una palabra muy nuestra…" required className="bg-white text-center font-serif text-lg tracking-[.08em]" /></label>
+                <Button type="submit" size="lg" className="w-full">Comenzar nuestra historia <ArrowRight className="size-4" /></Button>
+              </form>
+            )}
+
+            <div className="mt-5 text-center"><a href={adminMode ? "/" : "/?admin=1"} className="text-[10px] uppercase tracking-[.16em] text-[#75656b] underline-offset-4 hover:underline">{adminMode ? "Volver a la entrada de María" : "Acceso administrativo"}</a></div>
 
             {demo ? (
               <div className="mt-7 border-t border-[#5a2636]/10 pt-6">

@@ -254,7 +254,7 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
             ) : null}
 
             {section === "birthday" ? (
-              <section className="page-section"><SectionHeading eyebrow="Your birthday · November 2026" title="A calendar made of little promises." copy="Cada fecha guarda una parte de la celebración. Los detalles aparecen sólo cuando llega el momento correcto." /><div className="calendar-line grid gap-5 md:grid-cols-2 xl:grid-cols-3">{data.events.map((event) => <EventCard key={event.id} event={event} timezone={data.settings.timezone} />)}</div><div className="mt-10"><WishCard demo={viewer.demo} /></div></section>
+              <section className="page-section"><SectionHeading eyebrow="Your birthday · November 2026" title="A calendar made of little promises." copy="Cada fecha guarda una parte de la celebración. Los detalles aparecen sólo cuando llega el momento correcto." /><div className="calendar-line grid gap-5 md:grid-cols-2 xl:grid-cols-3">{data.events.map((event) => <EventCard key={event.id} event={event} timezone={data.settings.timezone} />)}</div><div className="mt-10"><WishCard demo={viewer.demo || Boolean(viewer.accessWord)} /></div></section>
             ) : null}
 
             {section === "memories" ? (
