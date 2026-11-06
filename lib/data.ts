@@ -1,8 +1,10 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { demoData } from "@/lib/demo-data";
 import { sanitizeEventForRole, sanitizeSurpriseForRole } from "@/lib/reveal";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import type {
   AdminData,
   AppSettings,
@@ -90,8 +92,8 @@ function settingsFromRow(row?: Row | null): AppSettings {
   };
 }
 
-async function signMemoryUrls(rows: Row[]): Promise<Memory[]> {
-  const supabase = await createClient();
+async function signMemoryUrls(rows: Row[], client?: SupabaseClient): Promise<Memory[]> {
+  const supabase = client ?? await createClient();
   return Promise.all(
     rows.map(async (row) => {
       let imageUrl = String(row.image_url ?? row.storage_path ?? "");
@@ -116,8 +118,76 @@ async function signMemoryUrls(rows: Row[]): Promise<Memory[]> {
   );
 }
 
+async function getPrivateGuestData(viewer: Viewer): Promise<ExperienceData> {
+  const supabase = createServiceClient();
+  const { data: celebration, error: celebrationError } = await supabase
+    .from("celebrations")
+    .select("id")
+    .order("created_at")
+    .limit(1)
+    .single();
+
+  if (celebrationError || !celebration) {
+    throw new Error("The private celebration is not configured.");
+  }
+
+  const celebrationId = celebration.id as string;
+  const [settingsResult, eventsResult, surprisesResult, memoriesResult, lettersResult, missionsResult] =
+    await Promise.all([
+      supabase.from("app_settings").select("*").eq("celebration_id", celebrationId).single(),
+      supabase.from("events").select("*").eq("celebration_id", celebrationId).order("order_index"),
+      supabase.from("surprises").select("*").eq("celebration_id", celebrationId).eq("active", true).order("order_index"),
+      supabase.from("memories").select("*").eq("celebration_id", celebrationId).eq("published", true).order("order_index"),
+      supabase.from("letters").select("*").eq("celebration_id", celebrationId).eq("status", "published").order("order_index"),
+      supabase.from("missions").select("*").eq("celebration_id", celebrationId).eq("active", true).order("order_index"),
+    ]);
+
+  const firstError = [
+    settingsResult,
+    eventsResult,
+    surprisesResult,
+    memoriesResult,
+    lettersResult,
+    missionsResult,
+  ].find((result) => result.error)?.error;
+  if (firstError) throw new Error(firstError.message);
+
+  const now = new Date();
+  const settingsRow = settingsResult.data as Row | null;
+  const settings = settingsFromRow(settingsRow);
+  settings.celebrationId = celebrationId;
+
+  return {
+    settings,
+    events: ((eventsResult.data ?? []) as Row[])
+      .map(eventFromRow)
+      .map((event) => sanitizeEventForRole(event, viewer.role, now)),
+    surprises: ((surprisesResult.data ?? []) as Row[])
+      .map(surpriseFromRow)
+      .map((surprise) => sanitizeSurpriseForRole(surprise, viewer.role, now)),
+    memories: await signMemoryUrls((memoriesResult.data ?? []) as Row[], supabase),
+    letters: ((lettersResult.data ?? []) as Row[]).map((row) => {
+      const letter = letterFromRow(row);
+      const unlocked = new Date(letter.revealAt).getTime() <= now.getTime();
+      return { ...letter, unlocked, body: unlocked ? letter.body : null, read: false };
+    }),
+    missions: ((missionsResult.data ?? []) as Row[]).map(
+      (row): Mission => ({
+        id: String(row.id),
+        title: String(row.title),
+        prompt: String(row.prompt),
+        kind: (row.kind as Mission["kind"]) ?? "action",
+        options: (row.options as string[] | null) ?? undefined,
+        successMessage: String(row.success_message ?? "You did it."),
+        completed: false,
+      }),
+    ),
+    reasons: (settingsRow?.love_reasons as string[] | null) ?? demoData.reasons,
+  };
+}
+
 export async function getExperienceData(viewer: Viewer): Promise<ExperienceData> {
-  if (viewer.demo || viewer.accessWord) {
+  if (viewer.demo) {
     return {
       ...demoData,
       events: demoData.events.map((event) =>
@@ -132,6 +202,8 @@ export async function getExperienceData(viewer: Viewer): Promise<ExperienceData>
       })),
     };
   }
+
+  if (viewer.accessWord) return getPrivateGuestData(viewer);
 
   const supabase = await createClient();
   const { data: membership } = await supabase
