@@ -111,6 +111,7 @@ create table public.memories (
   category text not null default 'Us',
   storage_path text,
   image_url text,
+  content_hash text,
   featured boolean not null default false,
   published boolean not null default false,
   order_index integer not null default 0,
@@ -118,6 +119,10 @@ create table public.memories (
   updated_at timestamptz not null default now(),
   constraint memories_image_source check (storage_path is not null or image_url is not null)
 );
+
+create unique index memories_celebration_content_hash_key
+  on public.memories (celebration_id, content_hash)
+  where content_hash is not null;
 
 create table public.letters (
   id uuid primary key default gen_random_uuid(),

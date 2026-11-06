@@ -20,6 +20,11 @@ export async function POST(request: NextRequest) {
   const category = z.string().min(1).max(80).parse(form.get("category"));
   const description = z.string().max(2000).parse(form.get("description") ?? "");
   const romanticNote = z.string().max(1000).parse(form.get("romanticNote") ?? "");
+  const fileBytes = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest("SHA-256", fileBytes);
+  const contentHash = Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
 
   const supabase = await createClient();
   const { data: celebration } = await supabase
@@ -29,6 +34,19 @@ export async function POST(request: NextRequest) {
     .limit(1)
     .single();
   if (!celebration) return NextResponse.json({ error: "Celebration not found" }, { status: 404 });
+
+  const { data: duplicate } = await supabase
+    .from("memories")
+    .select("id")
+    .eq("celebration_id", celebration.id)
+    .eq("content_hash", contentHash)
+    .maybeSingle();
+  if (duplicate) {
+    return NextResponse.json(
+      { error: "Esta imagen ya fue subida a la galería." },
+      { status: 409 },
+    );
+  }
 
   const extension = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const storagePath = `${celebration.id}/${crypto.randomUUID()}.${extension}`;
@@ -46,6 +64,7 @@ export async function POST(request: NextRequest) {
       description,
       romantic_note: romanticNote,
       storage_path: storagePath,
+      content_hash: contentHash,
       published: true,
     })
     .select()

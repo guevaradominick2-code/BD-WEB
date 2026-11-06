@@ -154,8 +154,30 @@ function SurprisesManager({ surprises, timezone, onCreate, onEdit, onDelete }: {
 function LettersManager({ letters, timezone, onCreate, onEdit, onDelete }: { letters: LoveLetter[]; timezone: string; onCreate: () => void; onEdit: (item: LoveLetter) => void; onDelete: (id: string) => void }) { return <><AdminHeading title="Letters manager" copy="Escribe, guarda borradores y programa las palabras que aparecerán en cada momento." action={<Button onClick={onCreate}><Plus className="size-4" /> New letter</Button>} /><div className="space-y-4">{letters.map((item) => <Card key={item.id} className="bg-white p-5 dark:bg-[color:var(--surface)]"><div className="flex flex-col gap-4 md:flex-row md:items-center"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#f5dde3] text-[#5a2636]"><FileText className="size-4" /></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h3 className="font-serif text-xl">{item.title}</h3><span className="rounded-full bg-black/5 px-3 py-1 text-[9px] uppercase tracking-[.12em]">{item.status}</span></div><p className="mt-1 truncate text-sm text-[#7c6d73]">{item.excerpt}</p><p className="mt-1 text-xs text-[#9a8b91]">{formatDateTime(item.revealAt, timezone)}</p></div><div className="flex gap-2"><Button variant="secondary" size="sm" onClick={() => onEdit(item)}><PenLine className="size-4" /> Edit</Button><Button variant="ghost" size="sm" onClick={() => onDelete(item.id)}><Trash2 className="size-4" /></Button></div></div></Card>)}</div></>; }
 
 function PhotoManager({ data, demo, onNotice }: { data: AdminData; demo: boolean; onNotice: (value: string) => void }) {
-  async function upload(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (demo) { onNotice("La carga real se habilita al conectar Supabase Storage."); return; } const response = await fetch("/api/admin/memories", { method: "POST", body: new FormData(event.currentTarget) }); if (response.ok) window.location.reload(); else onNotice((await response.json()).error ?? "No se pudo subir la imagen."); }
-  return <><AdminHeading title="Photo manager" copy="Sube imágenes a un bucket privado. Se validan el tipo y el tamaño antes de guardar cada recuerdo." /><Card className="mb-8 bg-white p-6 dark:bg-[color:var(--surface)]"><form onSubmit={upload} className="grid gap-4 md:grid-cols-2"><Field label="Photo"><Input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required /></Field><Field label="Title"><Input name="title" placeholder="Our favorite afternoon" required /></Field><Field label="Category"><Input name="category" placeholder="Favorite Memories" required /></Field><Field label="Description"><Input name="description" placeholder="What happened that day…" /></Field><Field label="Romantic note" full><Textarea name="romanticNote" placeholder="A note she will see with this memory…" /></Field><div className="md:col-span-2"><Button type="submit"><Upload className="size-4" /> Upload private photo</Button><span className="ml-4 text-xs text-[#7c6d73]">JPEG, PNG, WebP or AVIF · max. 8 MB</span></div></form></Card><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{data.memories.map((memory) => <Card key={memory.id} className="overflow-hidden bg-white dark:bg-[color:var(--surface)]"><div className="relative aspect-square"><Image src={memory.imageUrl} alt={memory.title} fill className="object-cover" sizes="300px" /></div><div className="p-4"><p className="font-serif text-xl">{memory.title}</p><p className="mt-1 text-xs text-[#7c6d73]">{memory.category}</p></div></Card>)}</div></>;
+  const [uploading, setUploading] = useState(false);
+
+  async function upload(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (uploading) return;
+    if (demo) {
+      onNotice("La carga real se habilita al conectar Supabase Storage.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const response = await fetch("/api/admin/memories", {
+        method: "POST",
+        body: new FormData(event.currentTarget),
+      });
+      if (response.ok) window.location.reload();
+      else onNotice((await response.json()).error ?? "No se pudo subir la imagen.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return <><AdminHeading title="Photo manager" copy="Sube imágenes a un bucket privado. Se validan el tipo, el tamaño y el contenido para evitar duplicados." /><Card className="mb-8 bg-white p-6 dark:bg-[color:var(--surface)]"><form onSubmit={upload} className="grid gap-4 md:grid-cols-2"><Field label="Photo"><Input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required disabled={uploading} /></Field><Field label="Title"><Input name="title" placeholder="Our favorite afternoon" required disabled={uploading} /></Field><Field label="Category"><Input name="category" placeholder="Favorite Memories" required disabled={uploading} /></Field><Field label="Description"><Input name="description" placeholder="What happened that day…" disabled={uploading} /></Field><Field label="Romantic note" full><Textarea name="romanticNote" placeholder="A note she will see with this memory…" disabled={uploading} /></Field><div className="md:col-span-2"><Button type="submit" disabled={uploading}><Upload className="size-4" /> {uploading ? "Uploading…" : "Upload private photo"}</Button><span className="ml-4 text-xs text-[#7c6d73]">JPEG, PNG, WebP or AVIF · max. 8 MB</span></div></form></Card><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{data.memories.map((memory) => <Card key={memory.id} className="overflow-hidden bg-white dark:bg-[color:var(--surface)]"><div className="relative aspect-square"><Image src={memory.imageUrl} alt={memory.title} fill className="object-cover" sizes="300px" /></div><div className="p-4"><p className="font-serif text-xl">{memory.title}</p><p className="mt-1 text-xs text-[#7c6d73]">{memory.category}</p></div></Card>)}</div></>;
 }
 
 function Personalization({ settings, demo, onNotice }: { settings: AdminData["settings"]; demo: boolean; onNotice: (value: string) => void }) {
