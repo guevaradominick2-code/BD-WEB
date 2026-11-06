@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ziuttqzqatjfnsuawxvr.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/sign/memories/**",
+      },
+    ],
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "motion"],
