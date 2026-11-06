@@ -1,5 +1,6 @@
 import { ArrowRight, KeyRound, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
+import { AdminLoginForm } from "@/components/admin-login-form";
 import { StarField } from "@/components/star-field";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -70,11 +71,7 @@ export default async function WelcomePage({
             ) : null}
 
             {adminMode ? (
-              <form action="/auth/sign-in" method="post" className="mt-7 space-y-4">
-                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Email</span><Input name="email" type="email" autoComplete="email" placeholder="tu@email.com" required className="bg-white" /></label>
-                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Contraseña</span><Input name="password" type="password" autoComplete="current-password" placeholder="••••••••••" required className="bg-white" /></label>
-                <Button type="submit" size="lg" className="w-full">Entrar al panel <ArrowRight className="size-4" /></Button>
-              </form>
+              <AdminLoginForm />
             ) : (
               <form action="/auth/access" method="post" className="mt-7 space-y-4">
                 <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Nuestra palabra</span><Input name="word" type="password" autoComplete="off" placeholder="Una palabra muy nuestra…" required className="bg-white text-center font-serif text-lg tracking-[.08em]" /></label>
