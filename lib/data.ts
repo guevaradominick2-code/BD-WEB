@@ -187,7 +187,10 @@ async function getPrivateGuestData(viewer: Viewer): Promise<ExperienceData> {
 }
 
 export async function getExperienceData(viewer: Viewer): Promise<ExperienceData> {
-  if (viewer.demo) {
+  const privateDataUnavailable =
+    viewer.accessWord && !process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (viewer.demo || privateDataUnavailable) {
     return {
       ...demoData,
       events: demoData.events.map((event) =>
