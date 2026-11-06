@@ -30,19 +30,19 @@ export default async function WelcomePage({
       <section className="relative z-10 mx-auto grid min-h-dvh w-full max-w-7xl items-center gap-12 px-5 py-16 lg:grid-cols-[1.15fr_.85fr] lg:px-12">
         <div className="max-w-2xl text-center lg:text-left">
           <div className="eyebrow mx-auto mb-8 w-fit border-white/15 bg-white/5 text-[#eddcc7] lg:mx-0">
-            <Sparkles className="size-3.5" /> A private constellation
+            <Sparkles className="size-3.5" /> Una experiencia privada
           </div>
-          <p className="mb-3 font-serif text-xl italic text-[#d9b98f]">For one person only</p>
+          <p className="mb-3 font-serif text-xl italic text-[#d9b98f]">Para una persona extraordinaria</p>
           <h1 className="font-serif text-[clamp(3.8rem,9vw,8.5rem)] leading-[.78] tracking-[-.055em] text-[#fff9f5]">
-            Our little<br /><span className="ml-[.35em] italic text-[#f1cfd8]">universe.</span>
+            María,<br /><span className="ml-[.18em] italic text-[#f1cfd8]">esto es para ti.</span>
           </h1>
           <p className="mx-auto mt-9 max-w-xl text-base leading-7 text-white/65 lg:mx-0 lg:text-lg">
-            Hay un pequeño universo esperando por ti. Un lugar hecho de recuerdos,
+            Hay días especiales… y luego está el tuyo. Este lugar está hecho de recuerdos,
             cartas y momentos preparados con todo el amor del mundo.
           </p>
           <div className="mt-10 flex items-center justify-center gap-3 text-xs uppercase tracking-[.24em] text-white/40 lg:justify-start">
             <span className="h-px w-10 bg-[#d9b98f]/50" />
-            Made with love · 2026
+            A Birthday Experience · 2026
           </div>
         </div>
 
@@ -57,7 +57,7 @@ export default async function WelcomePage({
                 Private access
               </span>
             </div>
-            <p className="text-xs font-semibold uppercase tracking-[.22em] text-[#9b7957]">Welcome, beautiful</p>
+            <p className="text-xs font-semibold uppercase tracking-[.22em] text-[#9b7957]">Bienvenida, María</p>
             <h2 className="mt-3 font-serif text-4xl leading-tight text-[#282126]">Este lugar fue creado para una sola persona. Tú.</h2>
             <p className="mt-4 text-sm leading-6 text-[#6f6268]">Ingresa con la invitación privada que recibiste.</p>
 
@@ -77,7 +77,7 @@ export default async function WelcomePage({
                 <Input name="password" type="password" autoComplete="current-password" placeholder="••••••••••" required className="bg-white" />
               </label>
               <Button type="submit" size="lg" className="w-full">
-                Entrar a nuestro universo <ArrowRight className="size-4" />
+                Comenzar nuestra historia <ArrowRight className="size-4" />
               </Button>
             </form>
 

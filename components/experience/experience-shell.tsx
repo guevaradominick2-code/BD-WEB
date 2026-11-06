@@ -37,12 +37,12 @@ import { cn, formatDate } from "@/lib/utils";
 type Section = "home" | "birthday" | "memories" | "letters" | "gifts" | "adventure";
 
 const navItems: { id: Section; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "birthday", label: "Birthday", icon: CalendarDays },
-  { id: "memories", label: "Memories", icon: Camera },
-  { id: "letters", label: "Letters", icon: Mail },
-  { id: "gifts", label: "Gifts", icon: Gift },
-  { id: "adventure", label: "Adventure", icon: Compass },
+  { id: "home", label: "Inicio", icon: Home },
+  { id: "birthday", label: "Tu día", icon: CalendarDays },
+  { id: "memories", label: "Recuerdos", icon: Camera },
+  { id: "letters", label: "Cartas", icon: Mail },
+  { id: "gifts", label: "Sorpresas", icon: Gift },
+  { id: "adventure", label: "Aventura", icon: Compass },
 ];
 
 function SectionHeading({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
@@ -191,14 +191,14 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
         <div>
           <div className="flex items-center gap-3">
             <div className="grid size-10 place-items-center rounded-full bg-[var(--burgundy)] text-white"><Heart className="size-4 fill-current" /></div>
-            <div><p className="font-serif text-xl leading-none">Our little universe</p><p className="mt-1 text-[9px] uppercase tracking-[.2em] text-[var(--muted)]">Made only for you</p></div>
+            <div><p className="font-serif text-xl leading-none">María</p><p className="mt-1 text-[9px] uppercase tracking-[.2em] text-[var(--muted)]">A Birthday Experience</p></div>
           </div>
           <nav className="mt-12 space-y-1" aria-label="Navegación principal">
             {navItems.map((item) => <NavButton key={item.id} item={item} active={section === item.id} onClick={() => navigate(item.id)} />)}
           </nav>
         </div>
         <div className="mt-auto rounded-3xl bg-[var(--burgundy)] p-5 text-white">
-          <p className="text-[9px] uppercase tracking-[.2em] text-[#d9b98f]">Next moment</p>
+          <p className="text-[9px] uppercase tracking-[.2em] text-[#d9b98f]">Próximo momento</p>
           <p className="mt-2 font-serif text-xl">{nextEvent?.teaser}</p>
           {nextEvent ? <div className="mt-4"><Countdown target={nextEvent.startsAt} compact /></div> : null}
         </div>
@@ -219,7 +219,7 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
         {menuOpen ? (
           <motion.div className="fixed inset-0 z-50 bg-[#1a1117]/60 backdrop-blur-sm lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.aside className="h-full w-[85%] max-w-sm bg-[var(--paper)] p-6" initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 28 }}>
-              <div className="mb-10 flex items-center justify-between"><p className="font-serif text-2xl">Our little universe</p><button onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center rounded-full border border-[color:var(--line)]"><X className="size-4" /></button></div>
+              <div className="mb-10 flex items-center justify-between"><p className="font-serif text-2xl">María · Tu historia</p><button onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center rounded-full border border-[color:var(--line)]"><X className="size-4" /></button></div>
               <nav className="space-y-2">{navItems.map((item) => <NavButton key={item.id} item={item} active={section === item.id} onClick={() => navigate(item.id)} />)}</nav>
               <form action="/auth/signout" method="post" className="mt-8"><Button type="submit" variant="secondary" className="w-full">Cerrar sesión</Button></form>
             </motion.aside>
@@ -235,11 +235,11 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
                 <section className="home-hero relative min-h-[72dvh] overflow-hidden px-5 py-16 md:px-10 md:py-24">
                   <div className="hero-glow" />
                   <div className="relative z-10 mx-auto max-w-6xl">
-                    <div className="eyebrow w-fit"><Sparkles className="size-3.5" /> Your private constellation</div>
-                    <p className="mt-10 font-serif text-lg italic text-[var(--champagne-dark)]">Welcome back, beautiful</p>
-                    <h1 className="mt-3 max-w-4xl font-serif text-[clamp(3.6rem,9vw,8rem)] leading-[.86] tracking-[-.055em]">Happy Birthday,<br /><span className="ml-[.16em] italic text-[var(--burgundy)]">My Love.</span></h1>
+                    <div className="eyebrow w-fit"><Sparkles className="size-3.5" /> Una historia escrita para ti</div>
+                    <p className="mt-10 font-serif text-lg italic text-[var(--champagne-dark)]">Bienvenida, {data.settings.girlfriendName}</p>
+                    <h1 className="mt-3 max-w-5xl font-serif text-[clamp(3.2rem,8vw,7.5rem)] leading-[.9] tracking-[-.05em]">{data.settings.heroMessage}</h1>
                     <p className="mt-8 max-w-xl text-base leading-8 text-[var(--muted)]">{data.settings.welcomeMessage}</p>
-                    <div className="mt-9 flex flex-wrap gap-3"><Button onClick={() => navigate("birthday")} size="lg">Explore your universe <ChevronRight className="size-4" /></Button><Button onClick={() => navigate("memories")} size="lg" variant="secondary">Our memories</Button></div>
+                    <div className="mt-9 flex flex-wrap gap-3"><Button onClick={() => navigate("birthday")} size="lg">Comenzar nuestra historia <ChevronRight className="size-4" /></Button><Button onClick={() => navigate("memories")} size="lg" variant="secondary">Ver nuestros recuerdos</Button></div>
                   </div>
                   <button className="easter-heart" aria-label="Mensaje secreto" onClick={() => setReasonIndex((reasonIndex + 1) % data.reasons.length)}><Heart className="size-4 fill-current" /><span>{data.reasons[reasonIndex]}</span></button>
                 </section>
@@ -272,7 +272,7 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
             {section === "adventure" ? (
               <section className="page-section"><SectionHeading eyebrow="Our adventure" title="The world feels closer with you." copy="Una invitación para el próximo capítulo, acompañada de pequeñas misiones para entrar en ambiente." />
                 <div className="grid gap-6 xl:grid-cols-[1.2fr_.8fr]">
-                  <Card className="boarding-pass overflow-hidden p-0"><div className="grid md:grid-cols-[1fr_auto]"><div className="p-7 md:p-10"><div className="flex items-center justify-between"><span className="text-[10px] uppercase tracking-[.24em] text-[var(--champagne-dark)]">Our little universe air</span><Plane className="size-5 text-[var(--burgundy)]" /></div><p className="mt-12 text-xs uppercase tracking-[.18em] text-[var(--muted)]">Admit one</p><h3 className="mt-2 font-serif text-4xl md:text-6xl">{revealedAdventure?.effectiveStatus === "locked" ? "Destination: a mystery" : revealedAdventure?.title}</h3><p className="mt-4 max-w-xl text-sm leading-7 text-[var(--muted)]">An unforgettable adventure with your favorite person.</p><div className="mt-10 grid grid-cols-2 gap-5 border-t border-dashed border-[color:var(--line-strong)] pt-6 md:grid-cols-4"><TicketDetail label="Passenger" value={data.settings.girlfriendName} /><TicketDetail label="Date" value={revealedAdventure ? formatDate(revealedAdventure.startsAt, data.settings.timezone) : "TBA"} /><TicketDetail label="Gate" value="LOVE" /><TicketDetail label="Seat" value="TOGETHER" /></div></div><div className="boarding-stub grid min-h-48 place-items-center border-t border-dashed border-[color:var(--line-strong)] p-8 md:w-52 md:border-l md:border-t-0"><div className="text-center"><div className="mx-auto grid size-16 place-items-center rounded-full border border-[var(--champagne)]"><Plane className="size-6" /></div><p className="mt-4 text-[9px] uppercase tracking-[.2em] text-[var(--muted)]">OLU · 2026</p></div></div></div></Card>
+                  <Card className="boarding-pass overflow-hidden p-0"><div className="grid md:grid-cols-[1fr_auto]"><div className="p-7 md:p-10"><div className="flex items-center justify-between"><span className="text-[10px] uppercase tracking-[.24em] text-[var(--champagne-dark)]">María Birthday Air</span><Plane className="size-5 text-[var(--burgundy)]" /></div><p className="mt-12 text-xs uppercase tracking-[.18em] text-[var(--muted)]">Admit one</p><h3 className="mt-2 font-serif text-4xl md:text-6xl">{revealedAdventure?.effectiveStatus === "locked" ? "Destination: a mystery" : revealedAdventure?.title}</h3><p className="mt-4 max-w-xl text-sm leading-7 text-[var(--muted)]">An unforgettable adventure with your favorite person.</p><div className="mt-10 grid grid-cols-2 gap-5 border-t border-dashed border-[color:var(--line-strong)] pt-6 md:grid-cols-4"><TicketDetail label="Passenger" value={data.settings.girlfriendName} /><TicketDetail label="Date" value={revealedAdventure ? formatDate(revealedAdventure.startsAt, data.settings.timezone) : "TBA"} /><TicketDetail label="Gate" value="LOVE" /><TicketDetail label="Seat" value="TOGETHER" /></div></div><div className="boarding-stub grid min-h-48 place-items-center border-t border-dashed border-[color:var(--line-strong)] p-8 md:w-52 md:border-l md:border-t-0"><div className="text-center"><div className="mx-auto grid size-16 place-items-center rounded-full border border-[var(--champagne)]"><Plane className="size-6" /></div><p className="mt-4 text-[9px] uppercase tracking-[.2em] text-[var(--muted)]">MARÍA · 2026</p></div></div></div></Card>
                   <Card className="p-6 md:p-8"><p className="section-eyebrow">Secret missions</p><div className="mt-5 space-y-4">{data.missions.map((mission) => <div key={mission.id} className="rounded-2xl border border-[color:var(--line)] p-4"><div className="flex items-start justify-between gap-4"><div><p className="text-[9px] uppercase tracking-[.18em] text-[var(--champagne-dark)]">{mission.title}</p><p className="mt-2 font-serif text-xl">{mission.prompt}</p></div>{missionDone[mission.id] ? <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#dfe9df] text-[#3c5b41]"><Check className="size-4" /></span> : null}</div>{mission.options && !missionDone[mission.id] ? <div className="mt-4 flex flex-wrap gap-2">{mission.options.map((option) => <button key={option} onClick={() => setMissionDone((current) => ({ ...current, [mission.id]: true }))} className="rounded-full border border-[color:var(--line-strong)] px-3 py-2 text-xs transition hover:border-[var(--burgundy)] hover:text-[var(--burgundy)]">{option}</button>)}</div> : null}{mission.kind === "action" && !missionDone[mission.id] ? <Button variant="secondary" size="sm" className="mt-4" onClick={() => setMissionDone((current) => ({ ...current, [mission.id]: true }))}>I found it</Button> : null}{missionDone[mission.id] ? <p className="mt-3 text-sm italic text-[var(--muted)]">{mission.successMessage}</p> : null}</div>)}</div></Card>
                 </div>
                 <div className="mt-8 rounded-[2rem] bg-[var(--burgundy)] px-6 py-12 text-center text-white md:px-12 md:py-16"><PartyPopper className="mx-auto size-8 text-[#d9b98f]" /><p className="mt-5 text-xs uppercase tracking-[.24em] text-[#d9b98f]">After the celebration</p><h3 className="mt-3 font-serif text-4xl md:text-6xl">Thank you for being you.</h3><p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/60">Cuando termine el cumpleaños, este espacio seguirá aquí para guardar lo que vivimos y volver a sentirlo juntos.</p></div>

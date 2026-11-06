@@ -5,10 +5,10 @@ import type { ExperienceData } from "@/lib/types";
 export const demoData: ExperienceData = {
   settings: {
     celebrationId: "00000000-0000-4000-8000-000000000001",
-    girlfriendName: "My Love",
+    girlfriendName: "María",
     birthday: "2026-11-08T00:00:00-06:00",
     timezone: "America/Costa_Rica",
-    heroMessage: "Happy Birthday, My Love",
+    heroMessage: "Hay días especiales… y luego está el tuyo, María.",
     welcomeMessage:
       "Este año no quería regalarte solamente algo que pudieras guardar. Quería regalarte momentos que podamos recordar para siempre.",
     palette: {

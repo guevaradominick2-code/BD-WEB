@@ -20,10 +20,10 @@ begin
     celebration_id, girlfriend_name, birthday, timezone, hero_message, welcome_message, love_reasons
   ) values (
     v_celebration_id,
-    'My Love',
+    'María',
     '2026-11-08 00:00:00-06',
     'America/Costa_Rica',
-    'Happy Birthday, My Love',
+    'Hay días especiales… y luego está el tuyo, María.',
     'Este año no quería regalarte solamente algo que pudieras guardar. Quería regalarte momentos que podamos recordar para siempre.',
     '["Porque incluso los días ordinarios se sienten especiales contigo.","Porque haces que cualquier lugar se sienta como casa.","Porque tu risa cambia por completo el día."]'::jsonb
   ) on conflict (celebration_id) do nothing;
