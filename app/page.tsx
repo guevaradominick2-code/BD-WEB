@@ -74,7 +74,7 @@ export default async function WelcomePage({
               <AdminLoginForm />
             ) : (
               <form action="/auth/access" method="post" className="mt-7 space-y-4">
-                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Nuestra palabra</span><Input name="word" type="password" autoComplete="off" placeholder="Una palabra muy nuestra…" required className="bg-white text-center font-serif text-lg tracking-[.08em]" /></label>
+                <label className="block"><span className="mb-2 block text-xs font-medium uppercase tracking-[.14em] text-[#75656b]">Nuestra palabra</span><Input name="word" type="password" autoComplete="off" placeholder="Una palabra muy nuestra…" required className="bg-white text-center font-serif text-lg text-[#282126] caret-[#5a2636] tracking-[.08em] placeholder:text-[#8a7b81] focus:bg-white" /></label>
                 <Button type="submit" size="lg" className="w-full">Comenzar nuestra historia <ArrowRight className="size-4" /></Button>
               </form>
             )}
