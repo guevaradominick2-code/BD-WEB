@@ -227,7 +227,7 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
         ) : null}
       </AnimatePresence>
 
-      <main className="pb-28 lg:ml-72 lg:pb-12">
+      <main className="pb-44 min-[400px]:pb-28 lg:ml-72 lg:pb-12">
         <AnimatePresence mode="wait">
           <motion.div key={section} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .35 }}>
             {section === "home" ? (
@@ -282,8 +282,8 @@ export function ExperienceShell({ data, viewer }: { data: ExperienceData; viewer
         </AnimatePresence>
       </main>
 
-      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-6 rounded-[1.4rem] border border-white/20 bg-[#2b1d25]/95 px-1 py-2 text-white shadow-2xl backdrop-blur-xl lg:hidden" aria-label="Navegación móvil">
-        {navItems.map((item) => { const Icon = item.icon; return <button key={item.id} onClick={() => navigate(item.id)} className={cn("flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[8px] uppercase tracking-[.08em] text-white/45 transition", section === item.id && "bg-white/10 text-[#f5dde3]")}><Icon className="size-4" /><span className="truncate">{item.label}</span></button>; })}
+      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-3 gap-1 rounded-[1.4rem] border border-white/20 bg-[#2b1d25]/95 px-2 py-2 text-white shadow-2xl backdrop-blur-xl min-[400px]:grid-cols-6 min-[400px]:gap-0 min-[400px]:px-1 lg:hidden" aria-label="Navegación móvil">
+        {navItems.map((item) => { const Icon = item.icon; return <button key={item.id} onClick={() => navigate(item.id)} className={cn("flex min-w-0 flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10px] leading-none tracking-normal text-white/55 transition min-[400px]:text-[9px]", section === item.id && "bg-white/10 text-[#f5dde3]")}><Icon className="size-4 shrink-0" /><span className="w-full whitespace-nowrap text-center">{item.label}</span></button>; })}
       </nav>
     </div>
   );
