@@ -29,7 +29,7 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input, Textarea } from "@/components/ui/input";
 import { effectiveStatus } from "@/lib/reveal";
-import type { AdminData, ExperienceEvent, LoveLetter, Surprise, Viewer } from "@/lib/types";
+import type { AdminData, ExperienceEvent, LoveLetter, Memory, Surprise, Viewer } from "@/lib/types";
 import { cn, formatDateTime } from "@/lib/utils";
 
 type AdminSection = "dashboard" | "events" | "surprises" | "photos" | "letters" | "personalization" | "preview";
@@ -155,6 +155,8 @@ function LettersManager({ letters, timezone, onCreate, onEdit, onDelete }: { let
 
 function PhotoManager({ data, demo, onNotice }: { data: AdminData; demo: boolean; onNotice: (value: string) => void }) {
   const [uploading, setUploading] = useState(false);
+  const [editing, setEditing] = useState<Memory | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function upload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -177,7 +179,41 @@ function PhotoManager({ data, demo, onNotice }: { data: AdminData; demo: boolean
     }
   }
 
-  return <><AdminHeading title="Photo manager" copy="Sube imágenes a un bucket privado. Se validan el tipo, el tamaño y el contenido para evitar duplicados." /><Card className="mb-8 bg-white p-6 dark:bg-[color:var(--surface)]"><form onSubmit={upload} className="grid gap-4 md:grid-cols-2"><Field label="Photo"><Input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required disabled={uploading} /></Field><Field label="Title"><Input name="title" placeholder="Our favorite afternoon" required disabled={uploading} /></Field><Field label="Category"><Input name="category" placeholder="Favorite Memories" required disabled={uploading} /></Field><Field label="Description"><Input name="description" placeholder="What happened that day…" disabled={uploading} /></Field><Field label="Romantic note" full><Textarea name="romanticNote" placeholder="A note she will see with this memory…" disabled={uploading} /></Field><div className="md:col-span-2"><Button type="submit" disabled={uploading}><Upload className="size-4" /> {uploading ? "Uploading…" : "Upload private photo"}</Button><span className="ml-4 text-xs text-[#7c6d73]">JPEG, PNG, WebP or AVIF · max. 8 MB</span></div></form></Card><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{data.memories.map((memory) => <Card key={memory.id} className="overflow-hidden bg-white dark:bg-[color:var(--surface)]"><div className="relative aspect-square"><Image src={memory.imageUrl} alt={memory.title} fill className="object-cover" sizes="300px" /></div><div className="p-4"><p className="font-serif text-xl">{memory.title}</p><p className="mt-1 text-xs text-[#7c6d73]">{memory.category}</p></div></Card>)}</div></>;
+  async function saveMemory(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editing) return;
+    const form = new FormData(event.currentTarget);
+    const payload = {
+      title: String(form.get("title") ?? ""),
+      category: String(form.get("category") ?? ""),
+      description: String(form.get("description") ?? ""),
+      romantic_note: String(form.get("romantic_note") ?? ""),
+      memory_date: form.get("memory_date") ? String(form.get("memory_date")) : null,
+      place: form.get("place") ? String(form.get("place")) : null,
+      featured: form.get("featured") === "on",
+    };
+    const response = await fetch(`/api/admin/memories?id=${editing.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (response.ok) window.location.reload();
+    else onNotice((await response.json()).error ?? "No se pudo actualizar la fotografía.");
+  }
+
+  async function deleteMemory(memory: Memory) {
+    if (!window.confirm(`¿Eliminar definitivamente “${memory.title}”?`)) return;
+    setDeletingId(memory.id);
+    try {
+      const response = await fetch(`/api/admin/memories?id=${memory.id}`, { method: "DELETE" });
+      if (response.ok) window.location.reload();
+      else onNotice((await response.json()).error ?? "No se pudo eliminar la fotografía.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  return <><AdminHeading title="Photo manager" copy="Sube imágenes a un bucket privado. Se validan el tipo, el tamaño y el contenido para evitar duplicados." /><Card className="mb-8 bg-white p-6 dark:bg-[color:var(--surface)]"><form onSubmit={upload} className="grid gap-4 md:grid-cols-2"><Field label="Photo"><Input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required disabled={uploading} /></Field><Field label="Title"><Input name="title" placeholder="Our favorite afternoon" required disabled={uploading} /></Field><Field label="Category"><Input name="category" placeholder="Favorite Memories" required disabled={uploading} /></Field><Field label="Description"><Input name="description" placeholder="What happened that day…" disabled={uploading} /></Field><Field label="Romantic note" full><Textarea name="romanticNote" placeholder="A note she will see with this memory…" disabled={uploading} /></Field><div className="md:col-span-2"><Button type="submit" disabled={uploading}><Upload className="size-4" /> {uploading ? "Uploading…" : "Upload private photo"}</Button><span className="ml-4 text-xs text-[#7c6d73]">JPEG, PNG, WebP or AVIF · max. 8 MB</span></div></form></Card><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{data.memories.map((memory) => <Card key={memory.id} className="overflow-hidden bg-white dark:bg-[color:var(--surface)]"><div className="relative aspect-square"><Image src={memory.imageUrl} alt={memory.title} fill className="object-cover" sizes="300px" /></div><div className="p-4"><p className="font-serif text-xl">{memory.title}</p><p className="mt-1 text-xs text-[#7c6d73]">{memory.category}</p><div className="mt-4 flex gap-2 border-t border-black/5 pt-4"><Button type="button" variant="secondary" size="sm" onClick={() => setEditing(memory)}><PenLine className="size-4" /> Editar</Button><Button type="button" variant="ghost" size="sm" disabled={deletingId === memory.id} onClick={() => deleteMemory(memory)}><Trash2 className="size-4" /> Eliminar</Button></div></div></Card>)}</div><Dialog open={Boolean(editing)} onOpenChange={(open) => { if (!open) setEditing(null); }}><DialogContent title="Editar recuerdo" description="Cambia el texto que aparece junto a esta fotografía.">{editing ? <form onSubmit={saveMemory} className="grid gap-4 md:grid-cols-2"><Field label="Título"><Input name="title" defaultValue={editing.title} required /></Field><Field label="Categoría"><Input name="category" defaultValue={editing.category} required /></Field><Field label="Fecha"><Input name="memory_date" type="date" defaultValue={editing.date ?? ""} /></Field><Field label="Lugar"><Input name="place" defaultValue={editing.place ?? ""} /></Field><Field label="Descripción" full><Textarea name="description" defaultValue={editing.description} /></Field><Field label="Nota romántica" full><Textarea name="romantic_note" defaultValue={editing.romanticNote} /></Field><label className="flex items-center gap-3 md:col-span-2"><input name="featured" type="checkbox" defaultChecked={editing.featured} className="size-4 accent-[var(--burgundy)]" /><span className="text-sm">Usar como recuerdo destacado</span></label><div className="md:col-span-2"><Button type="submit" className="w-full"><Save className="size-4" /> Guardar cambios</Button></div></form> : null}</DialogContent></Dialog></>;
 }
 
 function Personalization({ settings, demo, onNotice }: { settings: AdminData["settings"]; demo: boolean; onNotice: (value: string) => void }) {
